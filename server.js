@@ -11,6 +11,8 @@ const md = new MarkdownIt();
 
 const PORT = process.env.PORT || 3000;
 
+const config = JSON.parse(fs.readFileSync(path.join(__dirname, 'config.json'), 'utf8'));
+
 let posts = [];
 
 const contentDir = path.join(__dirname, 'content');
@@ -46,12 +48,28 @@ function slugify(text) {
     .replace(/-+$/, ''); // Trim - from end of text
 }
 
+// Helper functions for date formatting
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  const year = date.getFullYear();
+  return `${month}/${day}/${year}`;
+}
+
+function getDateRange(start, end) {
+  const startFormatted = formatDate(start);
+  const endFormatted = end && end.trim() !== '' ? formatDate(end) : '';
+  return endFormatted ? `${startFormatted} - ${endFormatted}` : startFormatted;
+}
+
 // Initial load of posts
 loadPosts();
 
 // Watch for changes in the content directory
-chokidar.watch(contentDir).on('all', (event, path) => {
-  console.log(`Content directory changed: ${event} ${path}`);
+chokidar.watch(contentDir).on('all', (event, changedPath) => {
+  console.log(`Content directory changed: ${event} ${changedPath}`);
   loadPosts();
 });
 
@@ -73,7 +91,7 @@ app.get('/posts', (req, res) => {
       title: post.title,
       slug: post.slug,
       'start date': post['start date'],
-      'end date': post['end date'] || 'in-progress'
+      'end date': post['end date'] || ''
     }))
   );
 });
@@ -84,7 +102,7 @@ app.get('/posts/latest', (req, res) => {
       title: post.title,
       slug: post.slug,
       'start date': post['start date'],
-      'end date': post['end date'] || 'in-progress'
+      'end date': post['end date'] || ''
     }))
   );
 });
@@ -97,7 +115,7 @@ app.get('/posts/:slug', (req, res) => {
       title: post.title,
       slug: post.slug,
       'start date': post['start date'],
-      'end date': post['end date'] || 'in-progress',
+      'end date': post['end date'] || '',
       content: post.content,
       htmlContent: post.htmlContent
     });
@@ -132,35 +150,37 @@ app.get('/post/:slug', (req, res) => {
 // Helper functions to generate HTML
 function generateIndexPage(posts) {
   let postList = posts
-    .map(
-      post => `
+    .map(post => {
+      const dateRange = getDateRange(post['start date'], post['end date']);
+      return `
         <li>
             <a href="/post/${post.slug}">${post.title}</a>
-            <span>${post['start date']}</span>
+            <span>${dateRange}</span>
         </li>
-    `
-    )
+      `;
+    })
     .join('');
   return `
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Elemental Writings</title>
+    <title>${config.siteTitle}</title>
     <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-    <h1>Elemental Writings</h1>
+    <h1>${config.siteTitle}</h1>
     <ul>
         ${postList}
     </ul>
     <script src="/script.js"></script>
 </body>
 </html>
-    `;
+  `;
 }
 
 function generatePostPage(post) {
+  const dateRange = getDateRange(post['start date'], post['end date']);
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -171,12 +191,13 @@ function generatePostPage(post) {
 </head>
 <body>
     <h1>${post.title}</h1>
+    <div><strong>${dateRange}</strong></div>
     <div>${post.htmlContent}</div>
     <a href="/">Back to home</a>
     <script src="/script.js"></script>
 </body>
 </html>
-    `;
+  `;
 }
 
 app.listen(PORT, () => {
