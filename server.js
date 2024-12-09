@@ -60,7 +60,8 @@ function formatDate(dateStr) {
 
 function getDateRange(start, end) {
   const startFormatted = formatDate(start);
-  const endFormatted = end && end.trim() !== '' ? formatDate(end) : '';
+  const endStr = end ? String(end) : ''; // Ensure end is a string
+  const endFormatted = endStr.trim() !== '' ? formatDate(endStr) : '';
   return endFormatted ? `${startFormatted} - ${endFormatted}` : startFormatted;
 }
 
