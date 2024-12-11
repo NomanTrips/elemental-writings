@@ -39,6 +39,11 @@
     margin-bottom: 10px;
   }
   
+  .post-content img {
+    max-width: 50%;
+    height: auto;
+  }
+  
   /* Responsive design */
   @media (max-width: 600px) {
     body {

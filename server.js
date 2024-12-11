@@ -193,7 +193,7 @@ function generatePostPage(post) {
 <body>
     <h1>${post.title}</h1>
     <div><strong>${dateRange}</strong></div>
-    <div>${post.htmlContent}</div>
+    <div class="post-content">${post.htmlContent}</div>
     <a href="/">Back to home</a>
     <script src="/script.js"></script>
 </body>
