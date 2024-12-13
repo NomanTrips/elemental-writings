@@ -9,7 +9,7 @@ const compression = require('compression');
 const app = express();
 const md = new MarkdownIt();
 
-const PORT = process.env.PORT || 80;
+const PORT = process.env.PORT || 3000;
 
 const config = JSON.parse(fs.readFileSync(path.join(__dirname, 'config.json'), 'utf8'));
 
