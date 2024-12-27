@@ -1,3 +1,6 @@
 {
-    "siteTitle": "brian m. scott's writings"
-}
+    "siteTitle": "Jane Doe's writings",
+    "author": "Jane Doe",
+    "email": "jane.doe@example.com",
+    "aboutMe": "I'm Jane Doe and I write about tech and life."
+  }

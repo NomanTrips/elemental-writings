@@ -11,7 +11,10 @@ const md = new MarkdownIt();
 
 const PORT = process.env.PORT || 3000;
 
-const config = JSON.parse(fs.readFileSync(path.join(__dirname, 'config.json'), 'utf8'));
+// Load config
+const config = JSON.parse(
+  fs.readFileSync(path.join(__dirname, 'config.json'), 'utf8')
+);
 
 let posts = [];
 
@@ -44,8 +47,8 @@ function slugify(text) {
     .replace(/\s+/g, '-') // Replace spaces with -
     .replace(/[^\w\-]+/g, '') // Remove all non-word chars
     .replace(/\-\-+/g, '-') // Replace multiple - with single -
-    .replace(/^-+/, '') // Trim - from start of text
-    .replace(/-+$/, ''); // Trim - from end of text
+    .replace(/^-+/, '')     // Trim - from start of text
+    .replace(/-+$/, '');    // Trim - from end of text
 }
 
 // Helper functions for date formatting
@@ -74,7 +77,7 @@ chokidar.watch(contentDir).on('all', (event, changedPath) => {
   loadPosts();
 });
 
-// Enable compression for performance
+// Enable compression
 app.use(compression());
 
 // Serve static files from public directory
@@ -131,7 +134,7 @@ app.get('/robots.txt', (req, res) => {
   res.send('User-agent: *\nAllow: /');
 });
 
-// HTML Pages
+// HTML page routes
 app.get('/', (req, res) => {
   let html = generateIndexPage(posts);
   res.send(html);
@@ -148,7 +151,13 @@ app.get('/post/:slug', (req, res) => {
   }
 });
 
-// Helper functions to generate HTML
+// About page route
+app.get('/about', (req, res) => {
+  let html = generateAboutPage(config);
+  res.send(html);
+});
+
+// Helper to generate the index page
 function generateIndexPage(posts) {
   let postList = posts
     .map(post => {
@@ -161,6 +170,7 @@ function generateIndexPage(posts) {
       `;
     })
     .join('');
+
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -174,12 +184,16 @@ function generateIndexPage(posts) {
     <ul>
         ${postList}
     </ul>
+    <footer>
+      <a href="/about">About</a>
+    </footer>
     <script src="/script.js"></script>
 </body>
 </html>
   `;
 }
 
+// Helper to generate an individual post page
 function generatePostPage(post) {
   const dateRange = getDateRange(post['start date'], post['end date']);
   return `
@@ -194,6 +208,28 @@ function generatePostPage(post) {
     <h1>${post.title}</h1>
     <div><strong>${dateRange}</strong></div>
     <div class="post-content">${post.htmlContent}</div>
+    <a href="/">Back to home</a>
+    <script src="/script.js"></script>
+</body>
+</html>
+  `;
+}
+
+// Helper to generate the about page
+function generateAboutPage(config) {
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>About</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <h1>About</h1>
+    <p><strong>Author:</strong> ${config.author}</p>
+    <p><strong>Email:</strong> <a href="mailto:${config.email}">${config.email}</a></p>
+    <p>${config.aboutMe}</p>
     <a href="/">Back to home</a>
     <script src="/script.js"></script>
 </body>

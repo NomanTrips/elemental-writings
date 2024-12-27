@@ -58,7 +58,7 @@
   });
   document.body.appendChild(toggleButton);
 
-  // Client-side navigation using History API
+  // Client-side navigation (optional, can be removed if not desired)
   function ajaxLoad(url) {
     fetch(url)
       .then(response => response.text())
