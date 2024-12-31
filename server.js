@@ -205,10 +205,12 @@ function generatePostPage(post) {
     <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-    <h1>${post.title}</h1>
-    <div><strong>${dateRange}</strong></div>
-    <div class="post-content">${post.htmlContent}</div>
-    <a href="/">Back to home</a>
+    <div class="post-wrapper">
+      <h1>${post.title}</h1>
+      <div><strong>${dateRange}</strong></div>
+      <div class="post-content">${post.htmlContent}</div>
+      <a href="/">Back to home</a>
+    </div>
     <script src="/script.js"></script>
 </body>
 </html>

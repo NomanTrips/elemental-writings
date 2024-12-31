@@ -44,9 +44,33 @@ li {
   height: auto;
 }
 
+/* New container to keep the post at a comfortable reading width */
+.post-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Table styling to add borders */
+.post-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+}
+
+.post-content th,
+.post-content td {
+  border: 1px solid #ccc;
+  padding: 0.5em;
+}
+
 /* Responsive design */
 @media (max-width: 600px) {
   body {
     padding: 10px;
+  }
+
+  .post-wrapper {
+    padding: 0;
   }
 }
